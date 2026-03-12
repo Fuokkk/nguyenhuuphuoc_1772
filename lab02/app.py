@@ -63,45 +63,90 @@ def vigenere_decrypt_route():
                            res_de=decrypted_text, 
                            old_txt_de=text, 
                            old_key_de=key)
-
 # --- 3. RAIL FENCE CIPHER ---
 @app.route("/railfence")
-def railfence(): 
+def railfence_home():
     return render_template('railfence.html')
 
 @app.route("/railfence_encrypt", methods=['POST'])
-def railfence_encrypt():
+def railfence_encrypt_route():
     text = request.form.get('inputPlainText', '')
-    key = int(request.form.get('inputKeyPlain', 2))
+    key_raw = request.form.get('inputKeyPlain', '2')
+    key = int(key_raw) if key_raw.isdigit() else 2
+    
     railfence_obj = RailFenceCipher()
-    res = railfence_obj.encrypt(text, key)
+    res = railfence_obj.rail_fence_encrypt(text, key)
     return render_template('railfence.html', res_en=res, old_txt_en=text, old_key_en=key)
 
-# --- 4. PLAYFAIR CIPHER ---
+@app.route("/railfence_decrypt", methods=['POST'])
+def railfence_decrypt_route():
+    text = request.form.get('inputCipherText', '')
+    key_raw = request.form.get('inputKeyCipher', '2')
+    key = int(key_raw) if key_raw.isdigit() else 2
+    
+    railfence_obj = RailFenceCipher()
+    res = railfence_obj.rail_fence_decrypt(text, key)
+    return render_template('railfence.html', res_de=res, old_txt_de=text, old_key_de=key)
+
+#playfair
 @app.route("/playfair")
-def playfair(): 
+def playfair_home(): # Đổi tên hàm thành playfair_home
     return render_template('playfair.html')
 
-@app.route("/playfair_encrypt", methods=['POST'])
-def playfair_encrypt():
-    text = request.form.get('inputPlainText', '')
-    key = request.form.get('inputKeyPlain', '')
+@app.route("/playfair_matrix", methods=['POST'])
+def playfair_matrix_gen(): # Đổi tên hàm thành playfair_matrix_gen
+    key = request.form.get('inputKeyPlain', '').upper().replace(" ", "")
+    if not key: key = "KEY"
     playfair_obj = PlayFairCipher()
-    res = playfair_obj.encrypt(text, key)
-    return render_template('playfair.html', res_en=res, old_txt_en=text, old_key_en=key)
+    matrix = playfair_obj.create_playfair_matrix(key)
+    return render_template('playfair.html', matrix=matrix, old_key_en=key)
 
+@app.route("/playfair_encrypt", methods=['POST'])
+def playfair_encrypt_process(): # Đổi tên hàm để tránh lỗi AssertionError
+    text = request.form.get('inputPlainText', '').upper().replace(" ", "")
+    key = request.form.get('inputKeyPlain', '').upper().replace(" ", "")
+    
+    playfair_obj = PlayFairCipher()
+    matrix = playfair_obj.create_playfair_matrix(key)
+    res = playfair_obj.playfair_encrypt(text, matrix)
+    
+    return render_template('playfair.html', res_en=res, old_txt_en=text, old_key_en=key, matrix=matrix)
+
+@app.route("/playfair_decrypt", methods=['POST'])
+def playfair_decrypt_process(): # Đổi tên hàm để tránh lỗi AssertionError
+    text = request.form.get('inputCipherText', '').upper().replace(" ", "")
+    key = request.form.get('inputKeyCipher', '').upper().replace(" ", "")
+    
+    playfair_obj = PlayFairCipher()
+    matrix = playfair_obj.create_playfair_matrix(key)
+    res = playfair_obj.playfair_decrypt(text, matrix)
+    
+    return render_template('playfair.html', res_de=res, old_txt_de=text, old_key_de=key, matrix=matrix)
 # --- 5. TRANSPOSITION CIPHER ---
 @app.route("/transposition")
-def transposition(): 
+def transposition_home(): 
     return render_template('transposition.html')
 
 @app.route("/trans_encrypt", methods=['POST'])
-def trans_encrypt():
+def trans_encrypt_route():
     text = request.form.get('inputPlainText', '')
-    key = request.form.get('inputKeyPlain', '')
+    key_raw = request.form.get('inputKeyPlain', '2')
+    # Ép kiểu key sang int để thuật toán chạy đúng
+    key = int(key_raw) if key_raw.isdigit() else 2
+    
     trans_obj = TranspositionCipher()
     res = trans_obj.encrypt(text, key)
     return render_template('transposition.html', res_en=res, old_txt_en=text, old_key_en=key)
+
+@app.route("/trans_decrypt", methods=['POST'])
+def trans_decrypt_route():
+    text = request.form.get('inputCipherText', '')
+    key_raw = request.form.get('inputKeyCipher', '2')
+    key = int(key_raw) if key_raw.isdigit() else 2
+    
+    trans_obj = TranspositionCipher()
+    res = trans_obj.decrypt(text, key)
+    return render_template('transposition.html', res_de=res, old_txt_de=text, old_key_de=key)
 
 # Chạy Server
 if __name__ == "__main__":
