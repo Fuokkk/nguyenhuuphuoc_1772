@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rail Fence Cipher</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        .card { border-radius: 0; }
+        .card-header h2 { font-weight: bold; color: #333; letter-spacing: 1px; }
+        .section-title { font-weight: bold; color: blue; text-transform: uppercase; margin-bottom: 15px; }
+        .section-title.decrypt { color: green; }
+        .btn-encrypt { background-color: #007bff; color: white; border: none; }
+        .btn-decrypt { background-color: #28a745; color: white; border: none; }
+        .btn:hover { opacity: 0.9; }
+        hr { border-top: 1px solid #eee; }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow-sm border">
+            <div class="card-header text-center bg-white border-bottom pt-4 pb-3">
+                <h2 class="text-uppercase">Rail Fence Cipher</h2>
+            </div>
+
+            <div class="card-body px-5">
+                <form action="/railfence_encrypt" method="POST" class="mb-5">
+                    <h5 class="section-title">Encryption</h5>
+                    <div class="form-group">
+                        <label>Plain text:</label>
+                        <input type="text" class="form-control" name="inputPlainText" value="{{ old_txt_en or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Key:</label>
+                        <input type="text" class="form-control" name="inputKeyPlain" value="{{ old_key_en or '' }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary px-4 rounded">Encrypt</button>
+                    
+                    {% if res_en %}
+                    <div class="alert alert-light border mt-3 text-primary" style="background-color: #f8f9fa;">
+                        <strong>Result:</strong> {{ res_en }}
+                    </div>
+                    {% endif %}
+                </form>
+
+                <hr class="my-4">
+
+                <form action="/railfence_decrypt" method="POST" class="mb-3">
+                    <h5 class="section-title decrypt">Decryption</h5>
+                    <div class="form-group">
+                        <label>Cipher text:</label>
+                        <input type="text" class="form-control" name="inputCipherText" value="{{ old_txt_de or '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Key:</label>
+                        <input type="text" class="form-control" name="inputKeyCipher" value="{{ old_key_de or '' }}">
+                    </div>
+                    <button type="submit" class="btn btn-success px-4 rounded">Decrypt</button>
+
+                    {% if res_de %}
+                    <div class="alert alert-light border mt-3 text-success" style="background-color: #f8f9fa;">
+                        <strong>Result:</strong> {{ res_de }}
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="/" class="btn btn-secondary px-4">Quay lại trang chủ</a>
+        </div>
+    </div>
+</body>
+</html>
